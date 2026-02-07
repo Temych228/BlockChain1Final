@@ -19,38 +19,56 @@ OpenZeppelin Contracts library (installed via npm; provides the ERC20 token impl
 Installation
 
 Clone the repository and install dependencies in both the root and frontend directories:
+
+```
 git clone <repository-url>
 cd <repository-directory>
 npm install                    # Installs Hardhat, OpenZeppelin, etc.
 cd payroll-frontend
 npm install                    # Installs React app dependencies
+```
 
 This sets up the Hardhat project and React frontend. The package.json includes Hardhat and OpenZeppelin contracts; after npm install, you will have the necessary tools (Hardhat runner, ethers.js, etc.) ready.
 
 Deploying Contracts Locally
 
 First, start a Hardhat local node (it simulates an Ethereum testnet at http://127.0.0.1:8545 with chainId 31337). In one terminal, run:
+
+```
 npx hardhat node
+```
 
 You should see output like Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/ (this runs Hardhat’s local network with 20 funded test accounts).
 
 Next, in a separate terminal window, deploy all contracts using the provided script. With Hardhat running (or you can rely on its in-process network), execute:
+
+```
 npx hardhat run scripts/deploy_all.js --network localhost
+```
 
 This uses Hardhat’s CLI to run your deployment script. (Alternatively, if you didn’t run node above, you can just run npx hardhat run scripts/deploy_all.js and Hardhat will spin up an in-memory network automatically.) After running, the script will output the deployed contract addresses.
 
 Example: Hardhat’s documentation shows deploying with a similar command:
+
+```
 npx hardhat run ./scripts/deploy.js --network localhost.
+```
 
 Minting Tokens
 
 The EURToken and USDToken contracts include a mint function that only the owner (deployer) can call to issue tokens. To mint tokens, use the Hardhat console or write a script. For example, open the Hardhat console connected to your local network:
+
+```
 npx hardhat console --network localhost
+```
 
 Inside the console, you have the ethers object and contract instances available. You can retrieve the deployed token contract and call mint. For example:
+
+```
 const [owner] = await ethers.getSigners();
 const eurToken = await ethers.getContract("EURToken");   // Owner has mint role
 await eurToken.mint("0xEmployeeAddress", ethers.utils.parseUnits("1000")); 
+```
 
 This mints 1,000 (assuming 18 decimals) EURToken to the given employee address. Repeat similarly for USDToken. (You’ll see the owner address has a large ETH balance by default, so transactions will succeed.) When done, exit the console with Ctrl+C.
 
@@ -59,8 +77,11 @@ Using Hardhat’s console (npx hardhat console) lets you interact with contracts
 Frontend Setup
 
 The React app in payroll-frontend/ is a typical Create React App project. After installing dependencies (see Installation), start the development server:
+
+```
 cd payroll-frontend
 npm start
+```
 
 This runs the app in development mode on http://localhost:3000 . The browser should open automatically (or you can navigate there) and display the DApp’s interface.
 
@@ -105,10 +126,14 @@ Once MetaMask is on the Hardhat network, you can switch accounts among the pre-f
 Environment Variables
 
 The frontend app can use a .env file (place at payroll-frontend/.env) to store configuration. Create React App requires custom variables to start with REACT_APP_. For example:
+
+```
 # .env (example, do NOT commit secrets)
 REACT_APP_HARDHAT_URL=http://127.0.0.1:8545
 REACT_APP_CHAIN_ID=31337
 REACT_APP_PAYROLL_ADDRESS=0xYourPayrollContractAddressHere
+```
+
 These will be embedded into process.env in the React code. The frontend can then read process.env.REACT_APP_PAYROLL_ADDRESS and connect to the contract on the specified network. After creating or modifying .env, restart npm start to load the new values.
 
 In Create React App, any custom .env variables must begin with REACT_APP_. They will be replaced at build time and accessible in code via process.env.REACT_APP_....
